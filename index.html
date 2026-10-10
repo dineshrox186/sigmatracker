@@ -18,7 +18,7 @@ button:hover{background:#1e293b}button:disabled{opacity:.4;cursor:default}
 .stats div{background:rgba(255,255,255,.05);border-radius:10px;padding:8px;text-align:center;font-size:11px;color:var(--mut)}.stats b{display:block;font-size:20px;color:var(--fg)}
 .subs{display:grid;gap:8px;margin-top:10px}.subs small{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-bottom:4px}
 .note{font-size:11px;color:#64748b;margin:6px 0 0}
-#topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;display:grid;gap:8px;background:var(--bg);padding:6px 0 10px;isolation:isolate}\n#tabs{position:static;z-index:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--bg);padding:8px;border:1px solid var(--line);border-radius:12px;backdrop-filter:blur(8px)}
+#tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--bg);padding:8px;border:1px solid var(--line);border-radius:12px;backdrop-filter:blur(8px)}
 #tabs button{border:0;background:transparent;color:#cbd5e1;font-weight:600}#tabs button.on{background:var(--ac);color:#fff}
 .search{flex:1;min-width:160px;height:44px;background:#0f172a;border:1px solid var(--line);border-radius:12px;padding:0 12px;outline:0}.search:focus{border-color:#818cf8}
 .pills{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}.pills button{border-radius:99px;min-height:34px;white-space:nowrap}.pills button.on{border-color:#818cf8;background:rgba(99,102,241,.25)}
@@ -72,7 +72,7 @@ footer{font-size:12px;color:var(--mut)}footer a{color:#a5b4fc}
 /* Optional light theme */
 :root[data-theme="light"]{--bg:#f5f6fa;--card:#ffffff;--fg:#171923;--mut:#626b7b;--line:rgba(15,23,42,.14);--ac:#4f46e5}
 :root[data-theme="light"] body{background:var(--bg);color:var(--fg)}
-:root[data-theme="light"] #topbar{background:var(--bg)}\n:root[data-theme="light"] #tabs{background:rgba(245,246,250,.97)}
+:root[data-theme="light"] #tabs{background:rgba(245,246,250,.97)}
 :root[data-theme="light"] #tabs button{color:#374151}
 :root[data-theme="light"] button,
 :root[data-theme="light"] select{background:#fff;color:#1f2937}
@@ -151,11 +151,9 @@ footer{font-size:12px;color:var(--mut)}footer a{color:#a5b4fc}
 :root[data-theme="light"] footer a{color:#4338ca}
 
 </style></head><body><main>
-<div id="topbar">
 <nav id="tabs"></nav>
 <div class="row"><input class="search" id="q" placeholder="Search chapters…" aria-label="Search"><button id="vb" aria-label="Toggle view"></button><button id="themeBtn" aria-label="Switch color theme"></button></div>
 <div class="pills" id="pills"></div>
-</div>
 <div class="row" id="acts"></div>
 <div class="row" id="io"></div>
 <div id="board"></div>
