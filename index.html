@@ -106,6 +106,50 @@ footer{font-size:12px;color:var(--mut)}footer a{color:#a5b4fc}
 :root[data-theme="light"] .note{color:#626b7b}
 :root[data-theme="light"] .empty{color:#6b7280}
 
+
+/* Complete light palette: override every remaining hard-coded dark surface */
+:root[data-theme="light"],:root[data-theme="light"] body,:root[data-theme="light"] main{
+  background:#f5f6fa!important;color:#171923!important
+}
+:root[data-theme="light"] #tabs{background:rgba(245,246,250,.97)!important}
+:root[data-theme="light"] button,
+:root[data-theme="light"] select,
+:root[data-theme="light"] input,
+:root[data-theme="light"] textarea{
+  background-color:#fff!important;color:#171923!important;border-color:#d1d5db
+}
+:root[data-theme="light"] button:hover{background-color:#eef2ff!important}
+:root[data-theme="light"] #tabs button{background:transparent!important;color:#374151!important}
+:root[data-theme="light"] #tabs button.on{background:#4f46e5!important;color:#fff!important}
+:root[data-theme="light"] .search{background:#fff!important;color:#171923!important}
+:root[data-theme="light"] .panel{background:#fff!important;box-shadow:0 8px 24px rgba(15,23,42,.07)}
+:root[data-theme="light"] .bar{background:#e5e7eb!important}
+:root[data-theme="light"] .stats div{background:#eef0f5!important;color:#626b7b!important}
+:root[data-theme="light"] .stats b{color:#171923!important}
+:root[data-theme="light"] .col[data-cat=pool]{background:#f0f2f7!important}
+:root[data-theme="light"] .col[data-cat=easy]{background:#ecfdf5!important;border-color:#a7f3d0!important}
+:root[data-theme="light"] .col[data-cat=revise]{background:#fffbeb!important;border-color:#fcd34d!important}
+:root[data-theme="light"] .col[data-cat=hard]{background:#fff1f2!important;border-color:#fda4af!important}
+:root[data-theme="light"] .col.over{background:#eef2ff!important}
+:root[data-theme="light"] .chip{background:#fff!important;color:#1f2937!important;box-shadow:0 2px 6px rgba(15,23,42,.08)}
+:root[data-theme="light"] .tag{background:#eef0f5!important;color:#626b7b!important}
+:root[data-theme="light"] .lrow{border-bottom-color:rgba(15,23,42,.08)!important}
+:root[data-theme="light"] .lrow .t{background:transparent!important;color:#1f2937!important}
+:root[data-theme="light"] .shead{background:#e9ecf4!important;color:#1f2937!important}
+:root[data-theme="light"] .ov{background:rgba(15,23,42,.38)!important}
+:root[data-theme="light"] .dlg{background:#fff!important;color:#171923!important}
+:root[data-theme="light"] .dlg .hd{border-bottom-color:#e5e7eb}
+:root[data-theme="light"] .dlg .bd,
+:root[data-theme="light"] .dlg .bd p{color:#374151!important}
+:root[data-theme="light"] .cats button.on{background:#eef2ff!important;outline-color:#818cf8}
+:root[data-theme="light"] textarea{background:#f8fafc!important;color:#171923!important}
+:root[data-theme="light"] ul.tp{color:#374151!important}
+:root[data-theme="light"] .danger{color:#be123c!important;border-color:#fda4af}
+:root[data-theme="light"] .pills button.on{background:#e0e7ff!important}
+:root[data-theme="light"] .empty,:root[data-theme="light"] .note{color:#6b7280!important}
+:root[data-theme="light"] .ghost{background:#fff!important;color:#171923!important}
+:root[data-theme="light"] footer a{color:#4338ca}
+
 </style></head><body><main>
 <nav id="tabs"></nav>
 <div class="row"><input class="search" id="q" placeholder="Search chapters…" aria-label="Search"><button id="vb" aria-label="Toggle view"></button><button id="themeBtn" aria-label="Switch color theme"></button></div>
