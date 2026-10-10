@@ -285,9 +285,17 @@ document.addEventListener('pointercancel',()=>{if(dr&&dr.on){lastDrag=Date.now()
 /* export / import */
 $('#io').innerHTML=`<button id="ex">⬇ Export Progress</button><button id="im">⬆ Import Progress</button><input type="file" id="fi" accept="application/json,.json" hidden><span id="msg" role="status" style="font-size:12px"></span>`;
 const say=(t,ok)=>{const m=$('#msg');m.textContent=t;m.style.color=ok?'#6ee7b7':'#fda4af';setTimeout(()=>m.textContent='',6000)};
-$('#ex').onclick=async()=>{const rows=SUB.flatMap(s=>units(s.id).map(u=>({subject:s.label,chapter:u.name,status:cat(s.id,u.id),note:(S.e[s.id][u.id]||{}).note||''})));
- const blob=new Blob([JSON.stringify({app:'jee-chapter-tracker',syllabusVersion:D.version,examYear:D.examYear,exportedAt:new Date().toISOString(),entries:S.e,readable:rows},null,2)],{type:'application/json'});
- try{const d=window.claude&&await claude.use('downloads');if(!d)return say('Export is not available in this view.',false);await d.save({filename:'jee-progress-'+new Date().toISOString().slice(0,10)+'.json',data:blob})}catch(e){if(!e||e.code!=='declined')say('Export failed.',false)}};
+$('#ex').onclick=()=>{const rows=SUB.flatMap(s=>units(s.id).map(u=>({subject:s.label,chapter:u.name,status:cat(s.id,u.id),note:(S.e[s.id][u.id]||{}).note||''})));
+ const payload={app:'jee-chapter-tracker',syllabusVersion:D.version,examYear:D.examYear,exportedAt:new Date().toISOString(),entries:S.e,readable:rows};
+ try{
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='jee-progress-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  say('Progress exported as a JSON file.',true);
+ }catch(err){say('Export failed. Please try again in your browser.',false)}
+}
 $('#im').onclick=()=>$('#fi').click();
 $('#fi').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const p=JSON.parse(await f.text());if(!p||p.app!=='jee-chapter-tracker'||!p.entries||typeof p.entries!=='object')throw 0;const n={physics:{},chemistry:{},maths:{}};let k=0,u=0;for(const s of SUB.map(x=>x.id)){const ids=new Set(units(s).map(x=>x.id));for(const[id,v]of Object.entries(p.entries[s]||{})){if(!v||!IDS.includes(v.cat))continue;n[s][id]={cat:v.cat,note:typeof v.note==='string'?v.note.slice(0,500):undefined};ids.has(id)?k++:u++}}
  commit(()=>{S.e=n});say(`Imported ${k} chapters${u?` (${u} not in this syllabus kept)`:''}. Undo is available.`,true)}catch(x){say('Not a valid JEE Chapter Tracker export.',false)}e.target.value=''};
