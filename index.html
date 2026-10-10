@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>JEE Chapter Tracker</title>
 <style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#0b0f1a;--card:#111827;--fg:#e2e8f0;--mut:#94a3b8;--line:rgba(255,255,255,.1);--ac:#6366f1}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#000000;--card:#101010;--fg:#f5f5f5;--mut:#a3a3a3;--line:rgba(255,255,255,.13);--ac:#6366f1}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
@@ -48,9 +48,38 @@ ul.tp{margin:0;padding-left:18px;font-size:13px;color:#cbd5e1;display:grid;gap:5
 .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin-bottom:6px}
 footer{font-size:12px;color:var(--mut)}footer a{color:#a5b4fc}
 .danger{border-color:rgba(251,113,133,.4);color:#fda4af}
+
+/* Optional light theme */
+:root[data-theme="light"]{--bg:#f5f6fa;--card:#ffffff;--fg:#171923;--mut:#626b7b;--line:rgba(15,23,42,.14);--ac:#4f46e5}
+:root[data-theme="light"] body{background:var(--bg);color:var(--fg)}
+:root[data-theme="light"] #tabs{background:rgba(245,246,250,.94)}
+:root[data-theme="light"] #tabs button{color:#374151}
+:root[data-theme="light"] button,
+:root[data-theme="light"] select{background:#fff;color:#1f2937}
+:root[data-theme="light"] button:hover{background:#eef2ff}
+:root[data-theme="light"] .panel{background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.07)}
+:root[data-theme="light"] .bar{background:#e5e7eb}
+:root[data-theme="light"] .stats div{background:#eef0f5;color:#626b7b}
+:root[data-theme="light"] .stats b{color:#171923}
+:root[data-theme="light"] .col[data-cat=pool]{background:#f0f2f7}
+:root[data-theme="light"] .chip{background:#fff;color:#1f2937;box-shadow:0 2px 6px rgba(15,23,42,.08)}
+:root[data-theme="light"] .tag{background:#eef0f5;color:#626b7b}
+:root[data-theme="light"] .lrow{border-bottom-color:rgba(15,23,42,.08)}
+:root[data-theme="light"] .lrow .t{background:transparent;color:#1f2937}
+:root[data-theme="light"] .shead{background:#e9ecf4;color:#1f2937}
+:root[data-theme="light"] .ov{background:rgba(15,23,42,.45)}
+:root[data-theme="light"] .dlg{background:#fff;color:#171923}
+:root[data-theme="light"] .dlg .bd{color:#1f2937}
+:root[data-theme="light"] .dlg .bd p{color:#374151!important}
+:root[data-theme="light"] .cats button.on{background:#eef2ff;outline-color:#818cf8}
+:root[data-theme="light"] textarea{background:#f8fafc;color:#171923}
+:root[data-theme="light"] ul.tp{color:#374151}
+:root[data-theme="light"] .danger{color:#be123c}
+:root[data-theme="light"] .pills button.on{background:#e0e7ff}
+:root[data-theme="light"] .empty{color:#6b7280}
 </style></head><body><main>
 <nav id="tabs"></nav>
-<div class="row"><input class="search" id="q" placeholder="Search chapters…" aria-label="Search"><button id="vb" aria-label="Toggle view"></button></div>
+<div class="row"><input class="search" id="q" placeholder="Search chapters…" aria-label="Search"><button id="vb" aria-label="Toggle view"></button><button id="themeBtn" aria-label="Switch color theme"></button></div>
 <div class="pills" id="pills"></div>
 <div class="row" id="acts"></div>
 <div class="row" id="io"></div>
@@ -60,7 +89,7 @@ footer{font-size:12px;color:var(--mut)}footer a{color:#a5b4fc}
 const D={"examYear":2026,"version":"jee-main-2026-chapters-v2","paper":"Paper 1 (B.E./B.Tech)","verified":true,"url":"https://jeemain.nta.nic.in/document/syllabus-2026/","urlLabel":"NTA JEE Main 2026 official syllabus","subjects":[{"id":"physics","label":"Physics","short":"Phy"},{"id":"chemistry","label":"Chemistry","short":"Chem"},{"id":"maths","label":"Mathematics","short":"Math"}],"units":{"physics":[{"id":"p01","name":"Units and Measurements","topics":[]},{"id":"p02","name":"Motion in a Straight Line","topics":[]},{"id":"p03","name":"Motion in a Plane","topics":[]},{"id":"p04","name":"Laws of Motion","topics":[]},{"id":"p05","name":"Work, Energy and Power","topics":[]},{"id":"p06","name":"System of Particles and Centre of Mass","topics":[]},{"id":"p07","name":"Rotational Motion","topics":[]},{"id":"p08","name":"Gravitation","topics":[]},{"id":"p09","name":"Mechanical Properties of Solids","topics":[]},{"id":"p10","name":"Mechanical Properties of Fluids","topics":[]},{"id":"p11","name":"Thermal Properties of Matter","topics":[]},{"id":"p12","name":"Thermodynamics","topics":[]},{"id":"p13","name":"Kinetic Theory of Gases","topics":[]},{"id":"p14","name":"Oscillations","topics":[]},{"id":"p15","name":"Waves","topics":[]},{"id":"p16","name":"Electric Charges and Fields","topics":[]},{"id":"p17","name":"Electrostatic Potential and Capacitance","topics":[]},{"id":"p18","name":"Current Electricity","topics":[]},{"id":"p19","name":"Moving Charges and Magnetism","topics":[]},{"id":"p20","name":"Magnetism and Matter","topics":[]},{"id":"p21","name":"Electromagnetic Induction","topics":[]},{"id":"p22","name":"Alternating Current","topics":[]},{"id":"p23","name":"Electromagnetic Waves","topics":[]},{"id":"p24","name":"Ray Optics and Optical Instruments","topics":[]},{"id":"p25","name":"Wave Optics","topics":[]},{"id":"p26","name":"Dual Nature of Radiation and Matter","topics":[]},{"id":"p27","name":"Atoms","topics":[]},{"id":"p28","name":"Nuclei","topics":[]},{"id":"p29","name":"Semiconductor Electronics","topics":[]},{"id":"p30","name":"Experimental Skills","topics":[]}],"chemistry":[{"id":"c01","name":"Some Basic Concepts in Chemistry","topics":[]},{"id":"c02","name":"Atomic Structure","topics":[]},{"id":"c03","name":"Chemical Bonding and Molecular Structure","topics":[]},{"id":"c04","name":"Chemical Thermodynamics","topics":[]},{"id":"c05","name":"Solutions","topics":[]},{"id":"c06","name":"Equilibrium","topics":[]},{"id":"c07","name":"Redox Reactions","topics":[]},{"id":"c08","name":"Electrochemistry","topics":[]},{"id":"c09","name":"Chemical Kinetics","topics":[]},{"id":"c10","name":"Classification of Elements and Periodicity in Properties","topics":[]},{"id":"c11","name":"p-Block Elements","topics":[]},{"id":"c12","name":"d- and f-Block Elements","topics":[]},{"id":"c13","name":"Coordination Compounds","topics":[]},{"id":"c14","name":"Purification and Characterisation of Organic Compounds","topics":[]},{"id":"c15","name":"Some Basic Principles of Organic Chemistry","topics":[]},{"id":"c16","name":"Hydrocarbons","topics":[]},{"id":"c17","name":"Organic Compounds Containing Halogens","topics":[]},{"id":"c18","name":"Alcohols, Phenols and Ethers","topics":[]},{"id":"c19","name":"Aldehydes, Ketones and Carboxylic Acids","topics":[]},{"id":"c20","name":"Organic Compounds Containing Nitrogen","topics":[]},{"id":"c21","name":"Biomolecules","topics":[]},{"id":"c22","name":"Principles Related to Practical Chemistry","topics":[]}],"maths":[{"id":"m01","name":"Sets, Relations and Functions","topics":[]},{"id":"m02","name":"Complex Numbers","topics":[]},{"id":"m03","name":"Quadratic Equations","topics":[]},{"id":"m04","name":"Matrices","topics":[]},{"id":"m05","name":"Determinants","topics":[]},{"id":"m06","name":"Permutations and Combinations","topics":[]},{"id":"m07","name":"Binomial Theorem","topics":[]},{"id":"m08","name":"Sequences and Series","topics":[]},{"id":"m09","name":"Trigonometry","topics":[]},{"id":"m10","name":"Limits","topics":[]},{"id":"m11","name":"Continuity and Differentiability","topics":[]},{"id":"m12","name":"Applications of Derivatives","topics":[]},{"id":"m13","name":"Indefinite Integration","topics":[]},{"id":"m14","name":"Definite Integration","topics":[]},{"id":"m15","name":"Area Under Curves","topics":[]},{"id":"m16","name":"Differential Equations","topics":[]},{"id":"m17","name":"Straight Lines","topics":[]},{"id":"m18","name":"Circles","topics":[]},{"id":"m19","name":"Conic Sections","topics":[]},{"id":"m20","name":"Three-Dimensional Geometry","topics":[]},{"id":"m21","name":"Vector Algebra","topics":[]},{"id":"m22","name":"Statistics","topics":[]},{"id":"m23","name":"Probability","topics":[]}]}};
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const C={pool:['Uncategorised','#94a3b8','⚪'],easy:['Easy','#34d399','🟢'],revise:['Need Revision','#fbbf24','🟡'],hard:['Hard','#fb7185','🔴']},IDS=Object.keys(C),KEY='jee-tracker:'+D.version;
-const SUB=D.subjects;let S={e:{physics:{},chemistry:{},maths:{}},at:null,view:'board'},hist=[],tab='physics',q='',flt='all',bulk='revise',coll={},lastDrag=0;
+const SUB=D.subjects;let S={e:{physics:{},chemistry:{},maths:{}},at:null,view:'board'},hist=[],tab='physics',q='',flt='all',bulk='revise',coll={},lastDrag=0;\nconst THEME_KEY='jee-tracker-theme';let theme='dark';try{theme=localStorage.getItem(THEME_KEY)==='light'?'light':'dark'}catch(e){}document.documentElement.dataset.theme=theme;
 try{const p=JSON.parse(localStorage.getItem(KEY)||'null');if(p&&p.e){for(const s of SUB.map(x=>x.id))for(const[k,v]of Object.entries(p.e[s]||{}))if(v&&IDS.includes(v.cat))S.e[s][k]={cat:v.cat,note:typeof v.note==='string'?v.note.slice(0,500):undefined};S.at=+p.at||null;S.view=p.view==='list'?'list':'board'}}catch(e){}
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const cat=(s,id)=>(S.e[s][id]||{}).cat||'pool',units=s=>D.units[s],lab=s=>SUB.find(x=>x.id===s).label;
@@ -72,7 +101,7 @@ function render(){
  const per=Object.fromEntries(SUB.map(s=>[s.id,stat(s.id)]));
  $('#tabs').innerHTML=[...SUB,{id:'all',label:'All',short:'All'}].map(s=>`<button data-tab="${s.id}" class="${tab===s.id?'on':''}">${s.id==='all'?'All':`<span class="lg">${s.label}</span>`}${s.id==='all'?'':` <small>${per[s.id].pct}%</small>`}</button>`).join('');
  $('#pills').innerHTML=['all',...IDS].map(f=>`<button data-f="${f}" class="${flt===f?'on':''}">${f==='all'?'All':f==='pool'?'Uncategorised':f==='revise'?'Need revision only':f==='hard'?'Hard only':C[f][0]}</button>`).join('');
- $('#vb').textContent=S.view==='board'?'☰ List view':'▦ Board view';
+ $('#vb').textContent=S.view==='board'?'☰ List view':'▦ Board view';\n $('#themeBtn').textContent=theme==='dark'?'☀ Light mode':'☾ Dark mode';$('#themeBtn').title='Switch to '+(theme==='dark'?'light':'dark')+' mode';
  const one=tab!=='all'?tab:null;
  $('#acts').innerHTML=`<button id="undo" ${hist.length?'':'disabled'}>↩ Undo</button>`+(one?`<select id="bc">${['easy','revise','hard'].map(c=>`<option value="${c}" ${bulk===c?'selected':''}>${C[c][0]}</option>`).join('')}</select><button id="bm" ${per[one].pool?'':'disabled'}>Move all uncategorised</button><button id="rs">Reset ${lab(one)}</button>`:'')+`<button id="ra" class="danger">Reset all</button>`;
  const shown=SUB.filter(s=>tab==='all'||s.id===tab);
@@ -97,7 +126,7 @@ document.addEventListener('click',e=>{const t=e.target,g=a=>t.closest('['+a+']')
  if(g('data-coll')){const k=g('data-coll').dataset.coll;coll[k]=!coll[k];return render()}
  if(g('data-open')){const[s,id]=g('data-open').dataset.open.split(':');return openChapter(s,id)}
  const ch=t.closest('.chip');if(ch&&Date.now()-lastDrag>300)return openChapter(ch.dataset.s,ch.dataset.id);
- if(t.id==='vb'){S.view=S.view==='board'?'list':'board';persist();render()}
+ if(t.id==='vb'){S.view=S.view==='board'?'list':'board';persist();render()}\n if(t.id==='themeBtn'){theme=theme==='dark'?'light':'dark';document.documentElement.dataset.theme=theme;try{localStorage.setItem(THEME_KEY,theme)}catch(e){}render()}
  if(t.id==='undo'&&hist.length){S.e=JSON.parse(hist.pop());S.at=Date.now();persist();render()}
  if(t.id==='bm')confirmBox('Move all uncategorised?',`Every uncategorised ${lab(tab)} chapter will move to “${C[bulk][0]}”. You can undo this.`,'Move all',()=>commit(()=>{units(tab).forEach(u=>{if(cat(tab,u.id)==='pool')S.e[tab][u.id]={...S.e[tab][u.id],cat:bulk}})}),false);
  if(t.id==='rs')confirmBox('Reset '+lab(tab)+'?','All placements and notes for this subject will be cleared.','Reset subject',()=>commit(()=>{S.e[tab]={}}));
