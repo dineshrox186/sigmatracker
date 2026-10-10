@@ -49,6 +49,26 @@ ul.tp{margin:0;padding-left:18px;font-size:13px;color:#cbd5e1;display:grid;gap:5
 footer{font-size:12px;color:var(--mut)}footer a{color:#a5b4fc}
 .danger{border-color:rgba(251,113,133,.4);color:#fda4af}
 
+
+/* Consistent near-black surfaces throughout dark mode */
+:root:not([data-theme="light"]) body,
+:root:not([data-theme="light"]) main{background:#000!important;color:#f5f5f5}
+:root:not([data-theme="light"]) #tabs{background:rgba(0,0,0,.96)}
+:root:not([data-theme="light"]) button,
+:root:not([data-theme="light"]) select{background:#080808;color:#f5f5f5}
+:root:not([data-theme="light"]) button:hover{background:#181818}
+:root:not([data-theme="light"]) .search{background:#080808;color:#f5f5f5}
+:root:not([data-theme="light"]) .panel{background:#080808}
+:root:not([data-theme="light"]) .col[data-cat=pool]{background:#050505}
+:root:not([data-theme="light"]) .chip{background:#111;color:#f5f5f5}
+:root:not([data-theme="light"]) .lrow .t{background:transparent;color:#f5f5f5}
+:root:not([data-theme="light"]) .shead{background:#0b0b0b;color:#f5f5f5}
+:root:not([data-theme="light"]) .dlg{background:#080808;color:#f5f5f5}
+:root:not([data-theme="light"]) textarea{background:#111;color:#f5f5f5}
+:root:not([data-theme="light"]) .note,
+:root:not([data-theme="light"]) .empty{color:#a3a3a3}
+:root:not([data-theme="light"]) .ghost{background:#111}
+
 /* Optional light theme */
 :root[data-theme="light"]{--bg:#f5f6fa;--card:#ffffff;--fg:#171923;--mut:#626b7b;--line:rgba(15,23,42,.14);--ac:#4f46e5}
 :root[data-theme="light"] body{background:var(--bg);color:var(--fg)}
@@ -77,6 +97,15 @@ footer{font-size:12px;color:var(--mut)}footer a{color:#a5b4fc}
 :root[data-theme="light"] .danger{color:#be123c}
 :root[data-theme="light"] .pills button.on{background:#e0e7ff}
 :root[data-theme="light"] .empty{color:#6b7280}
+
+:root[data-theme="light"] .search{background:#fff;color:#171923}
+:root[data-theme="light"] .col[data-cat=easy]{background:rgba(52,211,153,.08)}
+:root[data-theme="light"] .col[data-cat=revise]{background:rgba(251,191,36,.10)}
+:root[data-theme="light"] .col[data-cat=hard]{background:rgba(251,113,133,.08)}
+:root[data-theme="light"] .ghost{background:#fff;color:#171923}
+:root[data-theme="light"] .note{color:#626b7b}
+:root[data-theme="light"] .empty{color:#6b7280}
+
 </style></head><body><main>
 <nav id="tabs"></nav>
 <div class="row"><input class="search" id="q" placeholder="Search chapters…" aria-label="Search"><button id="vb" aria-label="Toggle view"></button><button id="themeBtn" aria-label="Switch color theme"></button></div>
