@@ -150,6 +150,67 @@ footer{font-size:12px;color:var(--mut)}footer a{color:#a5b4fc}
 :root[data-theme="light"] .ghost{background:#fff!important;color:#171923!important}
 :root[data-theme="light"] footer a{color:#4338ca}
 
+
+/* Explicit, consistent colours for the controls at the top */
+:root:not([data-theme="light"]) #tabs button,
+:root:not([data-theme="light"]) .pills button,
+:root:not([data-theme="light"]) #vb,
+:root:not([data-theme="light"]) #themeBtn {
+  color: #e5e7eb !important;
+  border: 1px solid #333 !important;
+  background: #111 !important;
+}
+:root:not([data-theme="light"]) #tabs button.on {
+  color: #fff !important;
+  background: #4f46e5 !important;
+  border-color: #6366f1 !important;
+}
+:root:not([data-theme="light"]) .pills button.on {
+  color: #fff !important;
+  background: #3730a3 !important;
+  border-color: #818cf8 !important;
+}
+:root:not([data-theme="light"]) #vb:hover,
+:root:not([data-theme="light"]) #themeBtn:hover,
+:root:not([data-theme="light"]) .pills button:hover,
+:root:not([data-theme="light"]) #tabs button:not(.on):hover {
+  background: #262626 !important;
+}
+:root:not([data-theme="light"]) .search {
+  background: #111 !important;
+  color: #f5f5f5 !important;
+  border-color: #333 !important;
+}
+:root[data-theme="light"] #tabs button,
+:root[data-theme="light"] .pills button,
+:root[data-theme="light"] #vb,
+:root[data-theme="light"] #themeBtn {
+  color: #374151 !important;
+  border: 1px solid #d1d5db !important;
+  background: #fff !important;
+}
+:root[data-theme="light"] #tabs button.on {
+  color: #fff !important;
+  background: #4f46e5 !important;
+  border-color: #4f46e5 !important;
+}
+:root[data-theme="light"] .pills button.on {
+  color: #3730a3 !important;
+  background: #e0e7ff !important;
+  border-color: #818cf8 !important;
+}
+:root[data-theme="light"] #vb:hover,
+:root[data-theme="light"] #themeBtn:hover,
+:root[data-theme="light"] .pills button:hover,
+:root[data-theme="light"] #tabs button:not(.on):hover {
+  background: #eef2ff !important;
+}
+:root[data-theme="light"] .search {
+  background: #fff !important;
+  color: #171923 !important;
+  border-color: #d1d5db !important;
+}
+
 </style></head><body><main>
 <nav id="tabs"></nav>
 <div class="row"><input class="search" id="q" placeholder="Search chapters…" aria-label="Search"><button id="vb" aria-label="Toggle view"></button><button id="themeBtn" aria-label="Switch color theme"></button></div>
