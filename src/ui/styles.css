@@ -56,3 +56,95 @@ html,body,#root,button,a,input,select,textarea,[role="button"]{-webkit-tap-highl
 /* Fixed estimator assumptions replace interactive sliders. */
 .fixed-assumption{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;margin:10px 0;border:1px solid var(--line);background:#f6f6f0;font-size:11px;color:var(--muted)}
 .fixed-assumption strong{font-size:14px;color:var(--ink)}
+
+
+/* Estimator: prevent the score breakdown from forcing a wider-than-phone page. */
+@media(max-width:800px){
+  .estimator-layout,
+  .estimator-layout > div,
+  .estimator-layout .panel{
+    box-sizing:border-box;
+    min-width:0;
+    max-width:100%;
+    width:100%;
+  }
+  .estimator-layout .result-hero,
+  .estimator-layout .result-grid{
+    min-width:0;
+    max-width:100%;
+    width:100%;
+    box-sizing:border-box;
+  }
+  .estimator-layout .result-card{
+    min-width:0;
+    overflow-wrap:anywhere;
+  }
+  .estimator-layout .result-card span{
+    overflow-wrap:anywhere;
+  }
+  .estimator-layout .result-grid+.panel .estimator-breakdown-table{
+    display:block;
+    width:100%;
+    min-width:0;
+    max-width:100%;
+    table-layout:fixed;
+    overflow:visible;
+    font-size:11px;
+  }
+  .estimator-layout .result-grid+.panel .estimator-breakdown-table thead{
+    display:none;
+  }
+  .estimator-layout .result-grid+.panel .estimator-breakdown-table tbody{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:10px;
+    width:100%;
+  }
+  .estimator-layout .result-grid+.panel .estimator-breakdown-table tr{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:0 12px;
+    width:100%;
+    min-width:0;
+    box-sizing:border-box;
+    padding:7px 12px;
+    border:1px solid var(--line);
+    background:var(--paper);
+  }
+  .estimator-layout .result-grid+.panel .estimator-breakdown-table td{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:8px;
+    min-width:0;
+    padding:8px 0;
+    border-bottom:1px solid #edede6;
+    font-size:10px;
+    overflow-wrap:anywhere;
+    white-space:normal;
+  }
+  .estimator-layout .result-grid+.panel .estimator-breakdown-table td::before{
+    content:attr(data-label);
+    color:var(--muted);
+    font-size:9px;
+    line-height:1.35;
+    white-space:normal;
+  }
+  .estimator-layout .result-grid+.panel .estimator-breakdown-table td:first-child{
+    grid-column:1/-1;
+    display:block;
+    padding-top:5px;
+    padding-bottom:9px;
+    margin-bottom:1px;
+    border-bottom:1px solid var(--line);
+    font-size:12px;
+  }
+  .estimator-layout .result-grid+.panel .estimator-breakdown-table td:first-child::before{
+    display:none;
+  }
+}
+@media(max-width:360px){
+  .estimator-layout .result-grid{
+    grid-template-columns:minmax(0,1fr);
+  }
+}
