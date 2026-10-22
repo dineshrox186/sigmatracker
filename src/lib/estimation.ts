@@ -2,6 +2,8 @@ import type { Chapter } from '../data/chapters';
 import type { ProgressMap } from './storage';
 import {questionDistribution2026,questionDistributionShifts} from '../data/chapterStats';
 export const PATTERN={perSubject:25,total:75,marksPerCorrect:4,marksPerWrong:-1,subjectMarks:100,totalMarks:300};
+// Hard-coded attemptable-question weight for medium-readiness chapters (Need Revision).
+export const MEDIUM_CHAPTER_ATTEMPT_RATE=0.75;
 export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject:'All'|'Physics'|'Chemistry'|'Mathematics',accuracy:number,attemptWillingness:number){
  const selected=subject==='All'?chapters:chapters.filter(c=>c.subject===subject);
  const subjects=['Physics','Chemistry','Mathematics'] as const;
@@ -16,7 +18,7 @@ export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject
   const used=new Set<string>();
   for(const c of cs){
    const status=progress[c.id]?.status??'Unmarked';
-   const factor=status==='Easy / Confident'?1:0;
+   const factor=status==='Easy / Confident'?1:status==='Need Revision'?MEDIUM_CHAPTER_ATTEMPT_RATE:0;
    if(!factor) continue;
    const topics=aliases[c.id]??[];
    for(const topic of topics){
@@ -45,7 +47,7 @@ export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject
  const expected=(low+high)/2,markPerQuestion=accuracy*4-(1-accuracy);
  const marksMid=((low+high)/2)*markPerQuestion;
  const marksLow=Math.max(0,Math.round(marksMid-10)),marksHigh=Math.round(marksMid+10);
- return {subjects:bySubject,total:{available:75,low,high,attempted:expected,correct:expected*accuracy,wrong:expected*(1-accuracy),unattempted:Math.max(0,75-expected),marksLow,marksHigh,marks:expected*markPerQuestion},method:'Range based on 2026 question totals divided across 19 shifts; Only Easy / Confident chapters are included. Question range width is capped at 10 questions and centered on its midpoint; marks range is centered on the midpoint of the estimated marks.'};
+ return {subjects:bySubject,total:{available:75,low,high,attempted:expected,correct:expected*accuracy,wrong:expected*(1-accuracy),unattempted:Math.max(0,75-expected),marksLow,marksHigh,marks:expected*markPerQuestion},method:'Range based on 2026 question totals divided across 19 shifts; Easy / Confident chapters use full weight, Need Revision (medium-readiness) chapters use a 75% weight, and Hard / Unmarked chapters are excluded. Question range width is capped at 10 questions and centered on its midpoint; marks range is centered on the midpoint of the estimated marks.'};
 }
 export type RankInput={physics:number;chemistry:number;mathematics:number;manualTotal:string;manualPercentile:string;shift:string};
 // Hard-coded 2026 overall marks-to-percentile reference bands compiled from Careers360's published 2026 marks/percentile analysis.
