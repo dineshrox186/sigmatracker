@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "JEE Main Preparation Desk",
-  "short_name": "JEE Prep",
-  "description": "Offline-first JEE Main chapter tracker and preparation estimator.",
+  "name": "Sigma Tracker",
+  "short_name": "Sigma Tracker",
+  "description": "Sigma Tracker — offline-first study tracker and preparation estimator.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
