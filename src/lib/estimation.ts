@@ -48,19 +48,35 @@ export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject
  return {subjects:bySubject,total:{available:75,low,high,attempted:expected,correct:expected*accuracy,wrong:expected*(1-accuracy),unattempted:Math.max(0,75-expected),marksLow,marksHigh,marks:expected*markPerQuestion},method:'Range based on 2026 question totals divided across 19 shifts; Only Easy / Confident chapters are included. Question range width is capped at 10 questions and centered on its midpoint; marks range is centered on the midpoint of the estimated marks.'};
 }
 export type RankInput={physics:number;chemistry:number;mathematics:number;manualTotal:string;manualPercentile:string;shift:string};
+// Hard-coded 2026 overall marks-to-percentile reference bands compiled from Careers360's published 2026 marks/percentile analysis.
+// Each point is the midpoint of a published marks band and percentile band; values between points are interpolated.
+// These are planning estimates, not official NTA conversion values; shift difficulty can materially change the result.
+const MARKS_PERCENTILE_2026: readonly [number, number][] = [
+ [0,11.43],[5,11.43],[14.5,26.70],[24.5,45.30],[34.5,62.50],
+ [44.5,73.70],[54.5,81.00],[64.5,85.60],[74.5,88.80],[84.5,91.20],
+ [94.5,92.95],[104.5,94.38],[114.5,95.52],[124.5,96.44],[134.5,97.18],
+ [144.5,97.81],[154.5,98.30],[164.5,98.69],[174.5,99.02],[184.5,99.28],
+ [194.5,99.48],[204.5,99.63],[214.5,99.73],[224.5,99.82],[234.5,99.89],
+ [244.5,99.93],[255,99.97],[265,99.9917],[278.5,99.9975],[293.5,99.9995],[300,100]
+];
+function percentileFromMarks(marks:number){
+ if(marks<=MARKS_PERCENTILE_2026[0][0])return MARKS_PERCENTILE_2026[0][1];
+ for(let i=1;i<MARKS_PERCENTILE_2026.length;i++){
+  const [x2,y2]=MARKS_PERCENTILE_2026[i]; const [x1,y1]=MARKS_PERCENTILE_2026[i-1];
+  if(marks<=x2)return y1+(y2-y1)*(marks-x1)/(x2-x1);
+ }
+ return 100;
+}
 export function rankEstimate(input:RankInput){
- const physics=Number(input.physics)||0;
- const chemistry=Number(input.chemistry)||0;
- const mathematics=Number(input.mathematics)||0;
+ const physics=Number(input.physics)||0, chemistry=Number(input.chemistry)||0, mathematics=Number(input.mathematics)||0;
  const manualTotal=input.manualTotal.trim()!==''?Number(input.manualTotal):NaN;
  const subjectEntered=[input.physics,input.chemistry,input.mathematics].some(v=>Number.isFinite(Number(v))&&Number(v)!==0);
  const total=Number.isFinite(manualTotal)?manualTotal:subjectEntered?physics+chemistry+mathematics:NaN;
- const percentile=input.manualPercentile.trim()!==''?Number(input.manualPercentile):NaN;
  if(!Number.isFinite(total)||total<0||total>300)return {total,percentile:null,rankLow:null,rankHigh:null,note:'Enter valid marks from 0 to 300.'};
- if(Number.isFinite(percentile)){
-  if(percentile<0||percentile>100)return {total,percentile:null,rankLow:null,rankHigh:null,note:'Percentile must be between 0 and 100.'};
-  const candidates=1500000; const central=Math.max(1,Math.round((100-percentile)/100*candidates)+1);
-  return {total,percentile,rankLow:Math.max(1,Math.floor(central*.92)),rankHigh:Math.ceil(central*1.08),note:'Approximate rank range using an illustrative 1.5 million-candidate baseline. This is not an official NTA prediction; replace the baseline with a verified unique-candidate count.'};
- }
- return {total,percentile:null,rankLow:null,rankHigh:null,note:'Your total marks are calculated, but no verified 2026 marks-to-percentile dataset is bundled. Enter a known percentile to calculate an indicative rank range; marks alone cannot reliably determine percentile across shifts.'};
+ const percentile=input.manualPercentile.trim()!==''?Number(input.manualPercentile):percentileFromMarks(total);
+ if(!Number.isFinite(percentile)||percentile<0||percentile>100)return {total,percentile:null,rankLow:null,rankHigh:null,note:'Percentile must be between 0 and 100.'};
+ // NTA's 2026 unique-candidate count was reported as 1,538,468; rank is approximate and not an official scorecard result.
+ const candidates=1538468, central=Math.max(1,Math.round((100-percentile)/100*candidates)+1);
+ const manual=input.manualPercentile.trim()!=='';
+ return {total,percentile:Number(percentile.toFixed(4)),rankLow:Math.max(1,Math.floor(central*.92)),rankHigh:Math.ceil(central*1.08),note:manual?'Rank range uses your entered percentile and the reported 2026 unique-candidate count (1,538,468), with a ±8% planning margin.':'Percentile is interpolated from published 2026 overall marks/percentile bands, then converted using 1,538,468 unique candidates and a ±8% planning margin. This is an overall estimate, not shift-specific; actual percentile and AIR may differ.'};
 }
