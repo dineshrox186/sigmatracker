@@ -31,20 +31,23 @@ export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject
   }
   low=Math.max(0,Math.floor(low*attemptWillingness));
   high=Math.max(low,Math.ceil(high*attemptWillingness));
-  // Keep the question estimate tied to the mapped per-shift chapter ranges; marks range is capped below.
+  // Cap question-range width at 10, centered around the midpoint rather than pinning the lower bound.
+  if(high-low>10){const mid=(low+high)/2;low=Math.max(0,Math.round(mid-5));high=low+10;}
   const expected=(low+high)/2;
   const correct=expected*accuracy,wrong=expected*(1-accuracy);
   const perQuestionMarks=accuracy*4-(1-accuracy);
-  const marksLow=Math.round(low*perQuestionMarks);
-  const marksHigh=Math.max(marksLow,Math.min(marksLow+20,Math.round(high*perQuestionMarks)));
+  const marksMid=((low+high)/2)*perQuestionMarks;
+  const marksLow=Math.max(0,Math.round(marksMid-10));
+  const marksHigh=Math.max(marksLow,Math.round(marksMid+10));
   return {subject:sub,available:Math.min(25,cs.length),low,high,attempted:expected,correct,wrong,unattempted:Math.max(0,25-expected),marksLow,marksHigh,marks:correct*4-wrong,matched,proxy:true};
  });
  const visible=bySubject.filter(x=>subject==='All'||x.subject===subject);
  const low=visible.reduce((n,x)=>n+x.low,0),rawHigh=visible.reduce((n,x)=>n+x.high,0);
  const high=Math.min(low+20,rawHigh);
  const expected=(low+high)/2,markPerQuestion=accuracy*4-(1-accuracy);
- const marksLow=Math.round(low*markPerQuestion),marksHigh=Math.max(marksLow,Math.min(marksLow+20,Math.round(high*markPerQuestion)));
- return {subjects:bySubject,total:{available:75,low,high,attempted:expected,correct:expected*accuracy,wrong:expected*(1-accuracy),unattempted:Math.max(0,75-expected),marksLow,marksHigh,marks:expected*markPerQuestion},method:'Range based on 2026 question totals divided across 19 shifts; Easy / Confident chapters count fully and Need Revision chapters count at 50%. Marks range width is capped at 20 marks.'};
+ const marksMid=((low+high)/2)*markPerQuestion;
+ const marksLow=Math.max(0,Math.round(marksMid-10)),marksHigh=Math.round(marksMid+10);
+ return {subjects:bySubject,total:{available:75,low,high,attempted:expected,correct:expected*accuracy,wrong:expected*(1-accuracy),unattempted:Math.max(0,75-expected),marksLow,marksHigh,marks:expected*markPerQuestion},method:'Range based on 2026 question totals divided across 19 shifts; Easy / Confident chapters count fully and Need Revision chapters count at 50%. Question range width is capped at 10 questions and centered on its midpoint; marks range is centered on the midpoint of the estimated marks.'};
 }
 export type RankInput={physics:number;chemistry:number;mathematics:number;manualTotal:string;manualPercentile:string;shift:string};
 export function rankEstimate(input:RankInput){
