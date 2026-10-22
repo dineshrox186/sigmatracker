@@ -35,13 +35,17 @@ export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject
   if(high-low>20) high=low+20;
   const expected=(low+high)/2;
   const correct=expected*accuracy,wrong=expected*(1-accuracy);
-  return {subject:sub,available:Math.min(25,cs.length),low,high,attempted:expected,correct,wrong,unattempted:Math.max(0,25-expected),marksLow:low*(accuracy*4-(1-accuracy)),marksHigh:high*(accuracy*4-(1-accuracy)),marks:correct*4-wrong,matched,proxy:true};
+  const perQuestionMarks=accuracy*4-(1-accuracy);
+  const marksLow=Math.round(low*perQuestionMarks);
+  const marksHigh=Math.min(marksLow+20,Math.round(high*perQuestionMarks));
+  return {subject:sub,available:Math.min(25,cs.length),low,high,attempted:expected,correct,wrong,unattempted:Math.max(0,25-expected),marksLow,marksHigh,marks:correct*4-wrong,matched,proxy:true};
  });
  const visible=bySubject.filter(x=>subject==='All'||x.subject===subject);
  const low=visible.reduce((n,x)=>n+x.low,0),rawHigh=visible.reduce((n,x)=>n+x.high,0);
  const high=Math.min(low+20,rawHigh);
  const expected=(low+high)/2,markPerQuestion=accuracy*4-(1-accuracy);
- return {subjects:bySubject,total:{available:75,low,high,attempted:expected,correct:expected*accuracy,wrong:expected*(1-accuracy),unattempted:Math.max(0,75-expected),marksLow:low*markPerQuestion,marksHigh:high*markPerQuestion,marks:expected*markPerQuestion},method:'Range based on 2026 question totals divided across 19 shifts; Easy / Confident chapters count fully and Need Revision chapters count at 50%. Range width is capped at 20 questions.'};
+ const marksLow=Math.round(low*markPerQuestion),marksHigh=Math.min(marksLow+20,Math.round(high*markPerQuestion));
+ return {subjects:bySubject,total:{available:75,low,high,attempted:expected,correct:expected*accuracy,wrong:expected*(1-accuracy),unattempted:Math.max(0,75-expected),marksLow,marksHigh,marks:expected*markPerQuestion},method:'Range based on 2026 question totals divided across 19 shifts; Easy / Confident chapters count fully and Need Revision chapters count at 50%. Range width is capped at 20 questions.'};
 }
 export type RankInput={physics:number;chemistry:number;mathematics:number;manualTotal:string;manualPercentile:string;shift:string};
 export function rankEstimate(input:RankInput){
