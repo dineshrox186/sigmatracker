@@ -32,7 +32,7 @@ export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject
   low=Math.max(0,Math.floor(low*attemptWillingness));
   high=Math.max(low,Math.ceil(high*attemptWillingness));
   // Cap question-range width at 10, centered around the midpoint rather than pinning the lower bound.
-  if(high-low>10){const mid=(low+high)/2;low=Math.max(0,Math.round(mid-5));high=low+10;}
+  if(high-low>5){const mid=(low+high)/2;low=Math.max(0,Math.round(mid-2.5));high=low+5;}
   const expected=(low+high)/2;
   const correct=expected*accuracy,wrong=expected*(1-accuracy);
   const perQuestionMarks=accuracy*4-(1-accuracy);
