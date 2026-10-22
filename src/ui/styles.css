@@ -30,15 +30,24 @@ html,body,#root,button,a,input,select,textarea,[role="button"]{-webkit-tap-highl
   .detail-row td{padding:0}
 }
 
-/* Chapter tracker fits on mobile without horizontal scrolling. */
+/* Chapter tracker fits on mobile without horizontal scrolling. Keep this scoped
+   so the four-column question distribution table retains its own layout. */
 @media(max-width:800px){
-  .table-wrap{overflow-x:hidden}
-  .table-wrap table{min-width:0;width:100%;table-layout:fixed;font-size:11px}
-  .table-wrap th,.table-wrap td{padding:10px 7px;overflow-wrap:anywhere}
-  .table-wrap th:first-child,.table-wrap td:first-child{width:62%}
-  .table-wrap th:last-child,.table-wrap td:last-child{width:38%}
+  .chapter-table-wrap{overflow-x:hidden}
+  .chapter-table-wrap table{min-width:0;width:100%;table-layout:fixed;font-size:11px}
+  .chapter-table-wrap th,.chapter-table-wrap td{padding:10px 7px;overflow-wrap:anywhere}
+  .chapter-table-wrap th:first-child,.chapter-table-wrap td:first-child{width:62%}
+  .chapter-table-wrap th:last-child,.chapter-table-wrap td:last-child{width:38%}
   .chapter-name{display:block;max-width:100%;width:100%;white-space:normal;overflow-wrap:anywhere}
   .chapter-name strong{font-size:12px;line-height:1.35}
   .chapter-name span{font-size:10px;line-height:1.35}
   .status-select{min-width:0;width:100%;max-width:100%;padding:0 4px;font-size:10px}
+  .distribution-table-wrap{overflow-x:hidden}
+  .distribution-table-wrap table{min-width:0;width:100%;table-layout:fixed;font-size:10px}
+  .distribution-table-wrap th,.distribution-table-wrap td{padding:8px 5px;overflow-wrap:anywhere;word-break:normal}
+  .distribution-table-wrap th:nth-child(1),.distribution-table-wrap td:nth-child(1){width:20%}
+  .distribution-table-wrap th:nth-child(2),.distribution-table-wrap td:nth-child(2){width:44%}
+  .distribution-table-wrap th:nth-child(3),.distribution-table-wrap td:nth-child(3){width:18%}
+  .distribution-table-wrap th:nth-child(4),.distribution-table-wrap td:nth-child(4){width:18%}
+  .distribution-table-wrap th{font-size:8px;letter-spacing:0}
 }
