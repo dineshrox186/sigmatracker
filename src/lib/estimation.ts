@@ -49,16 +49,18 @@ export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject
 }
 export type RankInput={physics:number;chemistry:number;mathematics:number;manualTotal:string;manualPercentile:string;shift:string};
 export function rankEstimate(input:RankInput){
- const subjectEntered=[input.physics,input.chemistry,input.mathematics].some(v=>Number.isFinite(v)&&v!==0);
- const total=input.manualTotal.trim()!==''?Number(input.manualTotal):subjectEntered?input.physics+input.chemistry+input.mathematics:NaN;
+ const physics=Number(input.physics)||0;
+ const chemistry=Number(input.chemistry)||0;
+ const mathematics=Number(input.mathematics)||0;
+ const manualTotal=input.manualTotal.trim()!==''?Number(input.manualTotal):NaN;
+ const subjectEntered=[input.physics,input.chemistry,input.mathematics].some(v=>Number.isFinite(Number(v))&&Number(v)!==0);
+ const total=Number.isFinite(manualTotal)?manualTotal:subjectEntered?physics+chemistry+mathematics:NaN;
  const percentile=input.manualPercentile.trim()!==''?Number(input.manualPercentile):NaN;
- // Score-to-percentile is intentionally not fabricated. If no manually entered percentile, report no numeric result.
  if(!Number.isFinite(total)||total<0||total>300)return {total,percentile:null,rankLow:null,rankHigh:null,note:'Enter valid marks from 0 to 300.'};
  if(Number.isFinite(percentile)){
   if(percentile<0||percentile>100)return {total,percentile:null,rankLow:null,rankHigh:null,note:'Percentile must be between 0 and 100.'};
-  // broad candidate-count mapping is a transparent rough conversion, not an official exact rank.
   const candidates=1500000; const central=Math.max(1,Math.round((100-percentile)/100*candidates)+1);
-  return {total,percentile,rankLow:Math.max(1,Math.floor(central*.92)),rankHigh:Math.ceil(central*1.08),note:'Rank range is an approximate percentile-to-rank conversion using an illustrative 1.5 million-candidate baseline. Replace baseline with verified 2026 unique-candidate count for a more defensible estimate.'};
+  return {total,percentile,rankLow:Math.max(1,Math.floor(central*.92)),rankHigh:Math.ceil(central*1.08),note:'Approximate rank range using an illustrative 1.5 million-candidate baseline. This is not an official NTA prediction; replace the baseline with a verified unique-candidate count.'};
  }
- return {total,percentile:null,rankLow:null,rankHigh:null,note:'Raw marks alone are not enough for a defensible percentile without a verified shift-specific 2026 calibration. Enter a known/assumed percentile to estimate an indicative rank.'};
+ return {total,percentile:null,rankLow:null,rankHigh:null,note:'Your total marks are calculated, but no verified 2026 marks-to-percentile dataset is bundled. Enter a known percentile to calculate an indicative rank range; marks alone cannot reliably determine percentile across shifts.'};
 }
