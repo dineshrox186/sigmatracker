@@ -13,7 +13,7 @@ export default function App(){
  const [query,setQuery]=useState(''),[subject,setSubject]=useState<'All'|Subject>('All'),[cls,setCls]=useState('All'),[statusFilter,setStatusFilter]=useState('All'),[sort,setSort]=useState('alphabetical'),[view,setView]=useState<'table'|'compact'>('table');
  const [distributionQuery,setDistributionQuery]=useState(''),[distributionSubject,setDistributionSubject]=useState<'All'|Subject>('All');
  const [selected,setSelected]=useState<string|null>(null),[rank,setRank]=useState<typeof emptyRank>(()=>{try{const saved=JSON.parse(localStorage.getItem(RANK_KEY)||'null') as Partial<typeof emptyRank>|null;return saved?{...emptyRank,...saved}:emptyRank}catch{return emptyRank}});
- const accuracy=1,willingness=1,[estSubject,setEstSubject]=useState<'All'|Subject>('All');
+ const accuracy=0.85,willingness=1,[estSubject,setEstSubject]=useState<'All'|Subject>('All');
  const [importMessage,setImportMessage]=useState('');
  useEffect(()=>saveProgress(progress),[progress]);useEffect(()=>{try{localStorage.setItem(RANK_KEY,JSON.stringify(rank))}catch{}},[rank]);
  const update=(id:string,patch:Partial<ChapterProgress>)=>setProgress(p=>({...p,[id]:{...defaultProgress(),...p[id],...patch}}));
