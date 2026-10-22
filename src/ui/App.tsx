@@ -30,7 +30,6 @@ export default function App(){
  return <div className="app-shell">
   <aside className={`sidebar ${drawer?'open':''}`}><div className="brand"><div className="brand-mark">J</div><div><strong>JEE MAIN</strong><span>PREPARATION DESK</span></div><button className="icon-btn mobile-close" onClick={()=>setDrawer(false)} aria-label="Close navigation"><X size={18}/></button></div>
    <div className="nav-label">WORKSPACE</div><nav>{nav.map(n=><button key={n.label} className={`nav-item ${page===n.label?'active':''}`} onClick={()=>setPageSafe(n.label)}><n.icon size={17}/><span>{n.label}</span>{n.label==='Revision Queue'&&due.length>0&&<b className="nav-count">{due.length}</b>}</button>)}</nav>
-   <div className="future"><div className="nav-label">FUTURE FEATURES</div>{['Daily study planner','PYQ practice','Mock-test analysis','Formula revision','Error notebook','Spaced repetition','College prediction'].map(x=><div className="future-item" key={x}><span>{x}</span><small>Later</small></div>)}</div>
    <div className="sidebar-foot"><span className="dot"></span><span>Offline-first · Local data</span></div>
   </aside>
   {drawer&&<button className="scrim" aria-label="Close navigation" onClick={()=>setDrawer(false)}/>}
