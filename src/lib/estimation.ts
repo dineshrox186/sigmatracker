@@ -10,7 +10,7 @@ export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject
  const bySubject=subjects.map(s=>{
   const cs=selected.filter(c=>c.subject===s);
   // Historical chapter means are unavailable for unverified rows. Use an explicit equal-share planning proxy, never call it historical.
-  const available=Math.min(25,cs.length);
+  const available=PATTERN.perSubject;
   let expected=0,easy=0,revision=0,hard=0;
   for(const c of cs){
    const st=progress[c.id]?.status??'Unmarked';
@@ -23,7 +23,7 @@ export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject
   }
   expected=Math.min(25,expected);
   const correct=expected*accuracy,wrong=expected*(1-accuracy);
-  return {subject:s,available,easy:Math.min(25,easy),revision:Math.min(25,revision),hard:Math.min(25,hard),attempted:expected,correct,wrong,unattempted:Math.max(0,25-expected),marks:correct*4-wrong,proxy:true};
+  return {subject:s,available,easy:Math.min(25,easy),revision:Math.min(25,revision),hard:Math.min(25,hard),attempted:expected,correct,wrong,unattempted:Math.max(0,available-expected),marks:correct*4-wrong,proxy:true};
  });
  return {subjects:bySubject,total:{available:75,attempted:bySubject.reduce((a,b)=>a+b.attempted,0),correct:bySubject.reduce((a,b)=>a+b.correct,0),wrong:bySubject.reduce((a,b)=>a+b.wrong,0),unattempted:bySubject.reduce((a,b)=>a+b.unattempted,0),marks:bySubject.reduce((a,b)=>a+b.marks,0)},method:'Planning proxy only — chapter-level verified 2026 shift means are not bundled.'};
 }
