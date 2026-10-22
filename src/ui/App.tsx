@@ -11,7 +11,7 @@ const emptyRank={physics:0,chemistry:0,mathematics:0,manualTotal:'',manualPercen
 export default function App(){
  const [page,setPage]=useState<Page>('Dashboard'),[drawer,setDrawer]=useState(false),[progress,setProgress]=useState<ProgressMap>(()=>loadProgress());
  const [query,setQuery]=useState(''),[subject,setSubject]=useState<'All'|Subject>('All'),[cls,setCls]=useState('All'),[statusFilter,setStatusFilter]=useState('All'),[sort,setSort]=useState('frequency'),[view,setView]=useState<'table'|'compact'>('table');
- const [selected,setSelected]=useState<string|null>(null),[rank,setRank]=useState(()=>{try{return JSON.parse(localStorage.getItem(RANK_KEY)||'null')||emptyRank}catch{return emptyRank}});
+ const [selected,setSelected]=useState<string|null>(null),[rank,setRank]=useState<typeof emptyRank>(()=>{try{const saved=JSON.parse(localStorage.getItem(RANK_KEY)||'null') as Partial<typeof emptyRank>|null;return saved?{...emptyRank,...saved}:emptyRank}catch{return emptyRank}});
  const [accuracy,setAccuracy]=useState(0.75),[willingness,setWillingness]=useState(0.85),[scenario,setScenario]=useState<Scenario>('Typical'),[includeRevision,setIncludeRevision]=useState(true),[estSubject,setEstSubject]=useState<'All'|Subject>('All');
  const [readiness,setReadiness]=useState(DEFAULT_READINESS),[importMessage,setImportMessage]=useState('');
  useEffect(()=>saveProgress(progress),[progress]);useEffect(()=>{try{localStorage.setItem(RANK_KEY,JSON.stringify(rank))}catch{}},[rank]);
