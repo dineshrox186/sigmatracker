@@ -1,62 +1,98 @@
-import type { Chapter } from './chapters';
-/**
- * No complete, auditable official NTA chapter-tagged frequency table was verified for this bundle.
- * Missing observations stay null. Add sourced per-shift observations here; do not infer fake ranges.
- */
-export type ChapterStats = {
- chapterId:string; january?:{min:number|null;max:number|null;mean:number|null;median:number|null;shiftsAnalysed:number;shiftsAppeared:number|null};
- april?:{min:number|null;max:number|null;mean:number|null;median:number|null;shiftsAnalysed:number;shiftsAppeared:number|null};
- source:string;verifiedOn:string;confidence:'High'|'Medium'|'Low'|'Unavailable';notes:string;
+export type QuestionSubject = 'Physics' | 'Chemistry' | 'Mathematics';
+export type QuestionDistributionRow = {
+  subject: QuestionSubject;
+  topic: string;
+  questions: number;
+  scope?: 'Combined topics';
 };
-export const chapterStats: ChapterStats[] = [];
-export const statsFor = (chapter:Chapter) => chapterStats.find(s=>s.chapterId===chapter.id);
-export const sources = [
- {name:'NTA — 2026 syllabus',url:'https://jeemain.nta.nic.in/document/syllabus-2026/',kind:'Official',note:'Syllabus baseline and unit names.'},
- {name:'NTA — 2026 archive',url:'https://jeemain.nta.nic.in/2026-archive/',kind:'Official',note:'Information bulletin, syllabus, FAQ and public notices.'},
- {name:'NTA — Question papers / sitemap',url:'https://jeemain.nta.nic.in/sitemap/',kind:'Official',note:'Published question-paper links for some shifts; availability is not a complete tagged frequency dataset.'},
- {name:'NTA — 2026 score analysis PDF',url:'https://cdnbbsr.s3waas.gov.in/s3f8e59f4b2fe7c5705bf878bbd494ccdf/uploads/2026/04/20260423459353913.pdf',kind:'Official',note:'Official score analysis reference.'},
- {name:'NTA — result notice',url:'https://nta.ac.in/Download/Notice/Notice_20260423195407.pdf',kind:'Official',note:'Official result notice.'},
- {name:'PrepOwl — chapter weightage',url:'https://prepowl.ai/blog/jee-main-2027-chapter-wise-weightage',kind:'Secondary',note:'Secondary chapter-tagging reference; definitions require reconciliation.'},
- {name:'Competishun — chapterwise weightage',url:'https://competishun.com/chapterwise-weightage-for-jee-mains/',kind:'Secondary',note:'Secondary chapter-wise analysis.'},
- {name:'April 2026 shift analysis',url:'https://www.adarshbarnwal.com/jee-main-2026-april-all-shift-analysis/',kind:'Secondary',note:'Shift analysis; use with stated sample and tagging method.'},
- {name:'January 2026 shift analysis',url:'https://www.adarshbarnwal.com/jee-main-2026-january-all-shift-analysis/',kind:'Secondary',note:'Shift analysis; use with stated sample and tagging method.'},
- {name:'Careers360 — marks vs percentile',url:'https://engineering.careers360.com/articles/jee-main-marks-vs-percentile',kind:'Secondary',note:'Approximate score-percentile context, not official per-shift calibration.'},
- {name:'College Pravesh — 2026 rank vs percentile',url:'https://www.collegepravesh.com/insights/jee-main-2026-rank-vs-percentile/',kind:'Secondary',note:'Rank/percentile reference; confirm year and candidate count.'}
-] as const;
-
 
 /**
- * Hard-coded chapter totals from Lumi's published analysis of 9 publicly available
- * JEE Main 2026 shifts (674 questions). Original question papers/answer keys are
- * from NTA; chapter tagging/count aggregation is third-party analysis, not an NTA
- * chapter-wise publication. Values are aggregate question counts across those 9
- * analysed shifts, NOT counts across all 19 shifts. Combined-topic rows are mapped
- * only when the catalogue chapter matches the published label closely.
+ * Hard-coded from ExamSIDE's 2026 JEE Main PYQ index. Totals are from its
+ * tagged question bank for 2026 across the 19 exam shifts; avg/shift is total / 19.
+ * These are ExamSIDE's chapter tags, not chapter-wise counts published by NTA.
+ * Categories explicitly marked Combined cover the source's grouped topic labels.
  */
-export const analysedShiftCount = 9;
-export const analysedQuestionTotals: Record<string, { total: number; label: string }> = {
-  p24: { total: 15, label: 'Ray Optics and Optical Instruments' },
-  p01: { total: 15, label: 'Units and Measurements' },
-  p19: { total: 13, label: 'Moving Charges and Magnetism' },
-  p25: { total: 13, label: 'Wave Optics' },
-  p09: { total: 11, label: 'Mechanical Properties of Solids' },
-  p12: { total: 10, label: 'Thermodynamics (Physics)' },
-  p29: { total: 10, label: 'Semiconductor Electronics' },
-  c15: { total: 16, label: 'Organic Chemistry: Some Basic Principles and Techniques' },
-  c13: { total: 14, label: 'Coordination Compounds' },
-  c20: { total: 14, label: 'Amines' },
-  c12: { total: 13, label: 'The d- and f-Block Elements' },
-  c04: { total: 13, label: 'Thermodynamics (Chemistry)' },
-  c21: { total: 13, label: 'Biomolecules' },
-  c17: { total: 12, label: 'Haloalkanes and Haloarenes' },
-  m20: { total: 17, label: 'Three-Dimensional Geometry' },
-  m02: { total: 16, label: 'Complex Numbers and Quadratic Equations' },
-  m08: { total: 16, label: 'Sequences and Series' },
-  m05: { total: 12, label: 'Determinants' },
-  m16: { total: 12, label: 'Differential Equations' },
-  m11: { total: 11, label: 'Continuity and Differentiability' }
-};
-export const questionsPerAnalysedPaper = (chapterId: string) => {
-  const row = analysedQuestionTotals[chapterId];
-  return row ? row.total / analysedShiftCount : null;
-};
+export const questionDistributionShifts = 19;
+export const questionDistributionSourceUrl = 'https://questions.examside.com/past-years/jee/jee-main';
+
+export const questionDistribution2026: QuestionDistributionRow[] = [
+  // Physics
+  {subject:'Physics',topic:'Geometrical Optics',questions:35},
+  {subject:'Physics',topic:'Wave Optics',questions:23},
+  {subject:'Physics',topic:'Electrostatics',questions:26,scope:'Combined topics'},
+  {subject:'Physics',topic:'Current Electricity',questions:28},
+  {subject:'Physics',topic:'Capacitor',questions:13},
+  {subject:'Physics',topic:'Magnetic Effect of Current',questions:19},
+  {subject:'Physics',topic:'Magnetic Properties of Matter',questions:4},
+  {subject:'Physics',topic:'Electromagnetic Induction',questions:20},
+  {subject:'Physics',topic:'Alternating Current',questions:10},
+  {subject:'Physics',topic:'Electromagnetic Waves',questions:17},
+  {subject:'Physics',topic:'Units & Measurements',questions:30},
+  {subject:'Physics',topic:'Motion in a Straight Line',questions:8},
+  {subject:'Physics',topic:'Motion in a Plane',questions:8},
+  {subject:'Physics',topic:'Circular Motion',questions:7},
+  {subject:'Physics',topic:'Laws of Motion',questions:12},
+  {subject:'Physics',topic:'Work, Power & Energy',questions:13},
+  {subject:'Physics',topic:'Centre of Mass and Collision',questions:8},
+  {subject:'Physics',topic:'Rotational Motion',questions:26},
+  {subject:'Physics',topic:'Properties of Matter (solids, fluids and thermal properties)',questions:36,scope:'Combined topics'},
+  {subject:'Physics',topic:'Heat and Thermodynamics',questions:37,scope:'Combined topics'},
+  {subject:'Physics',topic:'Simple Harmonic Motion',questions:14},
+  {subject:'Physics',topic:'Waves',questions:9},
+  {subject:'Physics',topic:'Gravitation',questions:10},
+  {subject:'Physics',topic:'Atoms and Nuclei',questions:24,scope:'Combined topics'},
+  {subject:'Physics',topic:'Dual Nature of Radiation',questions:16},
+  {subject:'Physics',topic:'Semiconductor',questions:21},
+
+  // Chemistry
+  {subject:'Chemistry',topic:'Some Basic Concepts of Chemistry',questions:18},
+  {subject:'Chemistry',topic:'Structure of Atom',questions:26},
+  {subject:'Chemistry',topic:'Redox Reactions',questions:8},
+  {subject:'Chemistry',topic:'Chemical Equilibrium',questions:14},
+  {subject:'Chemistry',topic:'Ionic Equilibrium',questions:14},
+  {subject:'Chemistry',topic:'Solutions',questions:23},
+  {subject:'Chemistry',topic:'Thermodynamics',questions:22},
+  {subject:'Chemistry',topic:'Electrochemistry',questions:21},
+  {subject:'Chemistry',topic:'Chemical Kinetics and Nuclear Chemistry',questions:27,scope:'Combined topics'},
+  {subject:'Chemistry',topic:'Periodic Table & Periodicity',questions:18},
+  {subject:'Chemistry',topic:'Chemical Bonding & Molecular Structure',questions:23},
+  {subject:'Chemistry',topic:'p-Block Elements',questions:21},
+  {subject:'Chemistry',topic:'d- and f-Block Elements',questions:21},
+  {subject:'Chemistry',topic:'Coordination Compounds',questions:36},
+  {subject:'Chemistry',topic:'Salt Analysis',questions:5},
+  {subject:'Chemistry',topic:'Basics of Organic Chemistry',questions:27},
+  {subject:'Chemistry',topic:'Hydrocarbons',questions:20},
+  {subject:'Chemistry',topic:'Haloalkanes and Haloarenes',questions:17},
+  {subject:'Chemistry',topic:'Alcohols, Phenols and Ethers',questions:14},
+  {subject:'Chemistry',topic:'Aldehydes, Ketones and Carboxylic Acids',questions:35},
+  {subject:'Chemistry',topic:'Compounds Containing Nitrogen',questions:25},
+  {subject:'Chemistry',topic:'Biomolecules',questions:19},
+  {subject:'Chemistry',topic:'Practical Organic Chemistry',questions:21},
+
+  // Mathematics
+  {subject:'Mathematics',topic:'Sets and Relations',questions:14},
+  {subject:'Mathematics',topic:'Logarithm',questions:3},
+  {subject:'Mathematics',topic:'Functions',questions:17},
+  {subject:'Mathematics',topic:'Complex Numbers',questions:19},
+  {subject:'Mathematics',topic:'Quadratic Equation and Inequalities',questions:16},
+  {subject:'Mathematics',topic:'Sequences and Series',questions:33},
+  {subject:'Mathematics',topic:'Binomial Theorem',questions:17},
+  {subject:'Mathematics',topic:'Matrices and Determinants',questions:33,scope:'Combined topics'},
+  {subject:'Mathematics',topic:'Permutations and Combinations',questions:22},
+  {subject:'Mathematics',topic:'Probability',questions:18},
+  {subject:'Mathematics',topic:'Vector Algebra',questions:27},
+  {subject:'Mathematics',topic:'3D Geometry',questions:29},
+  {subject:'Mathematics',topic:'Statistics',questions:16},
+  {subject:'Mathematics',topic:'Trigonometric Ratio and Identities',questions:12},
+  {subject:'Mathematics',topic:'Inverse Trigonometric Functions',questions:10},
+  {subject:'Mathematics',topic:'Straight Lines and Pair of Straight Lines',questions:14},
+  {subject:'Mathematics',topic:'Circle',questions:15},
+  {subject:'Mathematics',topic:'Conic Sections (Parabola, Ellipse and Hyperbola)',questions:42,scope:'Combined topics'},
+  {subject:'Mathematics',topic:'Limits, Continuity and Differentiability',questions:21,scope:'Combined topics'},
+  {subject:'Mathematics',topic:'Differentiation',questions:2},
+  {subject:'Mathematics',topic:'Applications of Derivatives',questions:11},
+  {subject:'Mathematics',topic:'Indefinite Integrals',questions:7},
+  {subject:'Mathematics',topic:'Definite Integration',questions:31},
+  {subject:'Mathematics',topic:'Area Under Curves',questions:19},
+  {subject:'Mathematics',topic:'Differential Equations',questions:21}
+];
