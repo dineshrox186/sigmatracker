@@ -6,7 +6,7 @@ import {defaultProgress,loadProgress,saveProgress,exportBackup,type ProgressMap,
 import {estimateCoverage,rankEstimate} from '../lib/estimation';
 type Page='Dashboard'|'Chapter Tracker'|'Question Distribution — 2026'|'Question Coverage & Score Estimator'|'Rank Estimator — 2026 Data'|'Backup & Restore'|'Settings';
 const nav:{label:Page;icon:React.ElementType}[]=[{label:'Dashboard',icon:House},{label:'Chapter Tracker',icon:BookOpen},{label:'Question Distribution — 2026',icon:ChartNoAxesColumn},{label:'Question Coverage & Score Estimator',icon:Gauge},{label:'Rank Estimator — 2026 Data',icon:Target},{label:'Backup & Restore',icon:FileUp},{label:'Settings',icon:Settings}];
-const statuses:PrepStatus[]=['Easy / Confident','Hard','Unmarked'];
+const statuses:PrepStatus[]=['Easy / Confident','Need Revision','Hard','Unmarked'];
 const emptyRank={physics:0,chemistry:0,mathematics:0,manualTotal:'',manualPercentile:'',shift:'Unknown shift'};
 export default function App(){
  const [page,setPage]=useState<Page>('Dashboard'),[drawer,setDrawer]=useState(false),[progress,setProgress]=useState<ProgressMap>(()=>loadProgress());
