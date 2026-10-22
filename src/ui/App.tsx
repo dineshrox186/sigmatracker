@@ -24,8 +24,8 @@ export default function App(){
  const rankResult=rankEstimate(rank);
  const setPageSafe=(p:Page)=>{setPage(p);setDrawer(false);setSelected(null)};
  const changeStatus=(cId:string,next:PrepStatus)=>update(cId,{status:next});
- function exportFile(){const blob=new Blob([exportBackup(progress)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='jee-prep-backup.json';a.click();URL.revokeObjectURL(url)}
- async function importFile(file?:File){if(!file)return;try{const data=JSON.parse(await file.text());if(!data.progress||typeof data.progress!=='object')throw new Error('Invalid backup format');setProgress(data.progress);setImportMessage('Backup imported successfully.');}catch{setImportMessage('Could not import this file. Choose a JEE Preparation Desk JSON backup.');}}
+ function exportFile(){const blob=new Blob([exportBackup(progress,rank)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='jee-prep-backup.json';a.click();URL.revokeObjectURL(url)}
+ async function importFile(file?:File){if(!file)return;try{const data=JSON.parse(await file.text());if(!data.progress||typeof data.progress!=='object')throw new Error('Invalid backup format');setProgress(data.progress);if(data.rank&&typeof data.rank==='object')setRank(r=>({...r,...data.rank}));setImportMessage(data.rank?'Backup and rank settings restored successfully.':'Progress restored. This older backup has no rank settings.');}catch{setImportMessage('Could not import this file. Choose a JEE Preparation Desk JSON backup.');}}
  const pct=Math.round((chapters.length-counts['Unmarked'])/chapters.length*100);
  return <div className="app-shell">
   <aside className={`sidebar ${drawer?'open':''}`}><div className="brand"><button className="icon-btn mobile-close" onClick={()=>setDrawer(false)} aria-label="Close navigation"><X size={18}/></button></div>
