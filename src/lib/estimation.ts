@@ -42,8 +42,8 @@ export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject
   return {subject:sub,available:Math.min(25,cs.length),low,high,attempted:expected,correct,wrong,unattempted:Math.max(0,25-expected),marksLow,marksHigh,marks:correct*4-wrong,matched,proxy:true};
  });
  const visible=bySubject.filter(x=>subject==='All'||x.subject===subject);
- const low=visible.reduce((n,x)=>n+x.low,0),rawHigh=visible.reduce((n,x)=>n+x.high,0);
- const high=Math.min(low+20,rawHigh);
+ let low=visible.reduce((n,x)=>n+x.low,0),high=visible.reduce((n,x)=>n+x.high,0);
+ if(high-low>10){const mid=(low+high)/2;low=Math.max(0,Math.round(mid-5));high=low+10;}
  const expected=(low+high)/2,markPerQuestion=accuracy*4-(1-accuracy);
  const marksMid=((low+high)/2)*markPerQuestion;
  const marksLow=Math.max(0,Math.round(marksMid-10)),marksHigh=Math.round(marksMid+10);
