@@ -1,31 +1,47 @@
 import type { Chapter } from '../data/chapters';
 import type { ProgressMap } from './storage';
+import {questionDistribution2026,questionDistributionShifts} from '../data/chapterStats';
 export const PATTERN={perSubject:25,total:75,marksPerCorrect:4,marksPerWrong:-1,subjectMarks:100,totalMarks:300};
 export const DEFAULT_READINESS:Record<string,number>={'Easy / Confident':0.82,'Need Revision':0.48,'Hard':0.12,'Unmarked':0.22};
 export type Scenario='Conservative'|'Typical'|'Optimistic';
 export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject:'All'|'Physics'|'Chemistry'|'Mathematics',accuracy:number,attemptWillingness:number,scenario:Scenario,includeRevision:boolean){
- const mult=scenario==='Conservative'?0.82:scenario==='Optimistic'?1.18:1;
  const selected=subject==='All'?chapters:chapters.filter(c=>c.subject===subject);
  const subjects=['Physics','Chemistry','Mathematics'] as const;
- const bySubject=subjects.map(s=>{
-  const cs=selected.filter(c=>c.subject===s);
-  // Historical chapter means are unavailable for unverified rows. Use an explicit equal-share planning proxy, never call it historical.
-  const available=PATTERN.perSubject;
-  let expected=0,easy=0,revision=0,hard=0;
+ const aliases:Record<string,string[]> = {
+  p01:['Units & Measurements'],p02:['Motion in a Straight Line'],p03:['Motion in a Plane'],p04:['Laws of Motion'],p05:['Work, Power & Energy'],p06:['Centre of Mass and Collision'],p07:['Rotational Motion'],p08:['Gravitation'],p09:['Properties of Matter (solids, fluids and thermal properties)'],p10:['Properties of Matter (solids, fluids and thermal properties)'],p11:['Properties of Matter (solids, fluids and thermal properties)'],p12:['Heat and Thermodynamics'],p13:['Heat and Thermodynamics'],p14:['Simple Harmonic Motion'],p15:['Waves'],p16:['Electrostatics'],p17:['Electrostatics','Capacitor'],p18:['Current Electricity'],p19:['Magnetic Effect of Current'],p20:['Magnetic Properties of Matter'],p21:['Electromagnetic Induction'],p22:['Alternating Current'],p23:['Electromagnetic Waves'],p24:['Geometrical Optics'],p25:['Wave Optics'],p26:['Dual Nature of Radiation'],p27:['Atoms and Nuclei'],p28:['Atoms and Nuclei'],p29:['Semiconductor'],p30:['Units & Measurements'],
+  c01:['Some Basic Concepts of Chemistry'],c02:['Structure of Atom'],c03:['Chemical Bonding & Molecular Structure'],c04:['Thermodynamics'],c05:['Solutions'],c06:['Chemical Equilibrium','Ionic Equilibrium'],c07:['Redox Reactions'],c08:['Electrochemistry'],c09:['Chemical Kinetics and Nuclear Chemistry'],c10:['Periodic Table & Periodicity'],c11:['p-Block Elements'],c12:['d- and f-Block Elements'],c13:['Coordination Compounds'],c14:['Practical Organic Chemistry'],c15:['Basics of Organic Chemistry'],c16:['Hydrocarbons'],c17:['Haloalkanes and Haloarenes'],c18:['Alcohols, Phenols and Ethers'],c19:['Aldehydes, Ketones and Carboxylic Acids'],c20:['Compounds Containing Nitrogen'],c21:['Biomolecules'],c22:['Practical Organic Chemistry'],
+  m01:['Sets and Relations','Functions'],m02:['Complex Numbers'],m03:['Quadratic Equation and Inequalities'],m04:['Matrices and Determinants'],m05:['Matrices and Determinants'],m06:['Permutations and Combinations'],m07:['Binomial Theorem'],m08:['Sequences and Series'],m09:['Trigonometric Ratio and Identities','Inverse Trigonometric Functions'],m10:['Limits, Continuity and Differentiability'],m11:['Limits, Continuity and Differentiability'],m12:['Applications of Derivatives'],m13:['Indefinite Integrals'],m14:['Definite Integration'],m15:['Area Under Curves'],m16:['Differential Equations'],m17:['Straight Lines and Pair of Straight Lines'],m18:['Circle'],m19:['Conic Sections (Parabola, Ellipse and Hyperbola)'],m20:['3D Geometry'],m21:['Vector Algebra'],m22:['Statistics'],m23:['Probability']
+ };
+ const bySubject=subjects.map(sub=>{
+  const cs=selected.filter(c=>c.subject===sub);
+  let low=0,high=0,matched=0;
+  const used=new Set<string>();
   for(const c of cs){
-   const st=progress[c.id]?.status??'Unmarked';
-   const p=st==='Easy / Confident'?DEFAULT_READINESS[st]:st==='Need Revision'?(includeRevision?DEFAULT_READINESS[st]:0):DEFAULT_READINESS[st];
-   const proxy=(available/Math.max(1,cs.length))*mult;
-   expected+=proxy*p*attemptWillingness;
-   if(st==='Easy / Confident') easy+=proxy;
-   else if(st==='Need Revision') revision+=proxy;
-   else if(st==='Hard') hard+=proxy;
+   const status=progress[c.id]?.status??'Unmarked';
+   const factor=status==='Easy / Confident'?1:status==='Need Revision'&&includeRevision?0.5:0;
+   if(!factor) continue;
+   const topics=aliases[c.id]??[];
+   for(const topic of topics){
+    const row=questionDistribution2026.find(x=>x.subject===sub&&x.topic===topic);
+    if(!row||used.has(row.topic))continue;
+    used.add(row.topic); matched++;
+    low+=Math.floor(row.questions/questionDistributionShifts)*factor;
+    high+=Math.ceil(row.questions/questionDistributionShifts)*factor;
+   }
   }
-  expected=Math.min(25,expected);
+  low=Math.max(0,Math.floor(low*attemptWillingness));
+  high=Math.max(low,Math.ceil(high*attemptWillingness));
+  // Keep the question interval narrow enough to be useful, while retaining its lower bound.
+  if(high-low>20) high=low+20;
+  const expected=(low+high)/2;
   const correct=expected*accuracy,wrong=expected*(1-accuracy);
-  return {subject:s,available,easy:Math.min(25,easy),revision:Math.min(25,revision),hard:Math.min(25,hard),attempted:expected,correct,wrong,unattempted:Math.max(0,available-expected),marks:correct*4-wrong,proxy:true};
+  return {subject:sub,available:Math.min(25,cs.length),low,high,attempted:expected,correct,wrong,unattempted:Math.max(0,25-expected),marksLow:low*(accuracy*4-(1-accuracy)),marksHigh:high*(accuracy*4-(1-accuracy)),marks:correct*4-wrong,matched,proxy:true};
  });
- return {subjects:bySubject,total:{available:75,attempted:bySubject.reduce((a,b)=>a+b.attempted,0),correct:bySubject.reduce((a,b)=>a+b.correct,0),wrong:bySubject.reduce((a,b)=>a+b.wrong,0),unattempted:bySubject.reduce((a,b)=>a+b.unattempted,0),marks:bySubject.reduce((a,b)=>a+b.marks,0)},method:'Planning proxy only — chapter-level verified 2026 shift means are not bundled.'};
+ const visible=bySubject.filter(x=>subject==='All'||x.subject===subject);
+ const low=visible.reduce((n,x)=>n+x.low,0),rawHigh=visible.reduce((n,x)=>n+x.high,0);
+ const high=Math.min(low+20,rawHigh);
+ const expected=(low+high)/2,markPerQuestion=accuracy*4-(1-accuracy);
+ return {subjects:bySubject,total:{available:75,low,high,attempted:expected,correct:expected*accuracy,wrong:expected*(1-accuracy),unattempted:Math.max(0,75-expected),marksLow:low*markPerQuestion,marksHigh:high*markPerQuestion,marks:expected*markPerQuestion},method:'Range based on 2026 question totals divided across 19 shifts; Easy / Confident chapters count fully and Need Revision chapters count at 50%. Range width is capped at 20 questions.'};
 }
 export type RankInput={physics:number;chemistry:number;mathematics:number;manualTotal:string;manualPercentile:string;shift:string};
 export function rankEstimate(input:RankInput){
