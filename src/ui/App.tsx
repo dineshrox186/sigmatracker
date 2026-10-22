@@ -28,7 +28,7 @@ export default function App(){
  async function importFile(file?:File){if(!file)return;try{const data=JSON.parse(await file.text());if(!data.progress||typeof data.progress!=='object')throw new Error('Invalid backup format');setProgress(data.progress);setImportMessage('Backup imported successfully.');}catch{setImportMessage('Could not import this file. Choose a JEE Preparation Desk JSON backup.');}}
  const pct=Math.round((chapters.length-counts['Unmarked'])/chapters.length*100);
  return <div className="app-shell">
-  <aside className={`sidebar ${drawer?'open':''}`}><div className="brand"><div className="brand-mark">J</div><div><strong>JEE MAIN</strong><span>PREPARATION DESK</span></div><button className="icon-btn mobile-close" onClick={()=>setDrawer(false)} aria-label="Close navigation"><X size={18}/></button></div>
+  <aside className={`sidebar ${drawer?'open':''}`}><div className="brand"><button className="icon-btn mobile-close" onClick={()=>setDrawer(false)} aria-label="Close navigation"><X size={18}/></button></div>
    <div className="nav-label">WORKSPACE</div><nav>{nav.map(n=><button key={n.label} className={`nav-item ${page===n.label?'active':''}`} onClick={()=>setPageSafe(n.label)}><n.icon size={17}/><span>{n.label}</span>{n.label==='Revision Queue'&&due.length>0&&<b className="nav-count">{due.length}</b>}</button>)}</nav>
    <div className="sidebar-foot"><span className="dot"></span><span>Offline-first · Local data</span></div>
   </aside>
