@@ -1,0 +1,15 @@
+{
+  "id": "/",
+  "name": "JEE Main Preparation Desk",
+  "short_name": "JEE Prep",
+  "description": "Offline-first JEE Main chapter tracker and preparation estimator.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f6f5f0",
+  "theme_color": "#f6f5f0",
+  "icons": [
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
