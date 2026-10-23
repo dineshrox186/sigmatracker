@@ -33,6 +33,7 @@ export default function App(){
  const [importMessage,setImportMessage]=useState('');
  useEffect(()=>{saveProgress(jeeProgress,'JEE')},[jeeProgress]);useEffect(()=>{saveProgress(neetProgress,'NEET')},[neetProgress]);
  useEffect(()=>{try{localStorage.setItem(rankStorageKey('JEE'),JSON.stringify(jeeRank))}catch{}},[jeeRank]);useEffect(()=>{try{localStorage.setItem(rankStorageKey('NEET'),JSON.stringify(neetRank))}catch{}},[neetRank]);
+ useEffect(()=>{saveStatusAssumptions(jeeAssumptions,'JEE')},[jeeAssumptions]);useEffect(()=>{saveStatusAssumptions(neetAssumptions,'NEET')},[neetAssumptions]);
  useEffect(()=>{try{localStorage.setItem('sigma-tracker:active-exam',exam)}catch{}},[exam]);
  useEffect(()=>{if(typeof navigator!=='undefined'&&navigator.storage?.persist){navigator.storage.persist().then(granted=>{if(granted)console.info('Persistent local storage granted');}).catch(()=>{});}},[]);
  const update=(id:string,patch:Partial<ChapterProgress>)=>setProgress(p=>({...p,[id]:{...defaultProgress(),...p[id],...patch}}));
