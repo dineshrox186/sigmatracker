@@ -49,7 +49,9 @@ export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject
  const visible=bySubject.filter(x=>subject==='All'||x.subject===subject);
  let low=visible.reduce((n,x)=>n+x.low,0),high=visible.reduce((n,x)=>n+x.high,0);
  if(high-low>10){const mid=(low+high)/2;low=Math.max(0,Math.round(mid-5));high=low+10;}
- const expected=(low+high)/2,markPerQuestion=accuracy*4-(1-accuracy);
+ const expected=(low+high)/2;
+ const totalAccuracy=visible.reduce((n,x)=>n+x.attempted*(x.attempted>0?x.correct/x.attempted:0),0)/Math.max(1,visible.reduce((n,x)=>n+x.attempted,0));
+ const markPerQuestion=totalAccuracy*4-(1-totalAccuracy);
  const marksMid=((low+high)/2)*markPerQuestion;
  const marksLow=Math.max(0,Math.round(marksMid-10)),marksHigh=Math.round(marksMid+10);
  return {subjects:bySubject,total:{available:75,low,high,attempted:expected,correct:visible.reduce((n,x)=>n+x.correct,0),wrong:visible.reduce((n,x)=>n+x.wrong,0),unattempted:Math.max(0,75-expected),marksLow,marksHigh,marks:expected*markPerQuestion},method:'Range based on 2026 question totals divided across 19 shifts; each status uses its configurable attempt rate and accuracy. Question range width is capped at 10 questions and centered on its midpoint; marks range is centered on the midpoint of the estimated marks.'};
