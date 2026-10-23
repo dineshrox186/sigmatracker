@@ -15,7 +15,8 @@ export default function App(){
  const [selected,setSelected]=useState<string|null>(null),[rank,setRank]=useState<typeof emptyRank>(()=>{try{const saved=JSON.parse(localStorage.getItem(RANK_KEY)||'null') as Partial<typeof emptyRank>|null;return saved?{...emptyRank,...saved}:emptyRank}catch{return emptyRank}});
  const accuracy=0.85,willingness=1,[estSubject,setEstSubject]=useState<'All'|Subject>('All');
  const [importMessage,setImportMessage]=useState('');
- useEffect(()=>saveProgress(progress),[progress]);useEffect(()=>{try{localStorage.setItem(RANK_KEY,JSON.stringify(rank))}catch{}},[rank]);
+ useEffect(()=>{saveProgress(progress)},[progress]);useEffect(()=>{try{localStorage.setItem(RANK_KEY,JSON.stringify(rank))}catch{}} ,[rank]);
+ useEffect(()=>{if(typeof navigator!=='undefined'&&navigator.storage?.persist){navigator.storage.persist().then(granted=>{if(granted)console.info('Persistent local storage granted');}).catch(()=>{});}},[]);
  const update=(id:string,patch:Partial<ChapterProgress>)=>setProgress(p=>({...p,[id]:{...defaultProgress(),...p[id],...patch}}));
  const counts=useMemo(()=>statuses.reduce((a,s)=>(a[s]=chapters.filter(c=>(progress[c.id]?.status??'Unmarked')===s).length,a),{} as Record<PrepStatus,number>),[progress]);
  const filtered=useMemo(()=>chapters.filter(c=>(subject==='All'||c.subject===subject)&&(cls==='All'||c.classLevel===cls)&&(statusFilter==='All'||(progress[c.id]?.status??'Unmarked')===statusFilter)&&(`${c.name} ${c.unit} ${c.subject} ${c.classLevel}`.toLowerCase().includes(query.toLowerCase()))).sort((a,b)=>sort==='alphabetical'?a.name.localeCompare(b.name):sort==='revision'?((progress[a.id]?.targetDate||'9999').localeCompare(progress[b.id]?.targetDate||'9999')):sort==='important'?a.unit.localeCompare(b.unit):a.name.localeCompare(b.name)),[subject,cls,statusFilter,progress,query,sort]);
