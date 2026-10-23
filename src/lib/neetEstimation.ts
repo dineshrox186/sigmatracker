@@ -1,6 +1,6 @@
 import type { NeetChapter, NeetSubject } from '../data/neetChapters';
 import { neetQuestionDistribution2026, neetQuestionDistributionShifts } from '../data/neetChapterStats';
-import type { ProgressMap } from './storage';
+import type { ProgressMap, StatusAssumptions } from './storage';
 
 export const NEET_PATTERN = {
   questionsBySubject: { Physics: 45, Chemistry: 45, Biology: 90 } as Record<NeetSubject, number>,
@@ -10,23 +10,28 @@ export const NEET_PATTERN = {
   totalMarks: 720
 };
 
-export function estimateNeetCoverage(chapters:NeetChapter[],progress:ProgressMap,subject:'All'|NeetSubject,accuracy:number,attemptWillingness:number){
+export function estimateNeetCoverage(chapters:NeetChapter[],progress:ProgressMap,subject:'All'|NeetSubject,assumptions:StatusAssumptions){
   const selected=subject==='All'?chapters:chapters.filter(c=>c.subject===subject);
   const subjects:NeetSubject[]=['Physics','Chemistry','Biology'];
   const bySubject=subjects.map(sub=>{
     const cs=selected.filter(c=>c.subject===sub);
-    let expected=0,matched=0;
+    let expected=0,matched=0,accuracyWeight=0,attemptWeight=0;
     for(const c of cs){
       const status=progress[c.id]?.status??'Unmarked';
-      const factor=status==='Easy / Confident'?1:status==='Need Revision'?.75:0;
+      const assumption=assumptions[status];
+      const factor=Math.max(0,Math.min(100,assumption.attemptRate))/100;
       if(!factor)continue;
       const row=neetQuestionDistribution2026.find(r=>r.chapterId===c.id);
       if(!row)continue;
-      expected+=(row.questions/neetQuestionDistributionShifts)*factor;
+      const weight=(row.questions/neetQuestionDistributionShifts)*factor;
+      expected+=weight;
+      accuracyWeight+=weight*Math.max(0,Math.min(100,assumption.accuracy))/100;
+      attemptWeight+=weight;
       matched++;
     }
     const cap=NEET_PATTERN.questionsBySubject[sub];
-    expected=Math.max(0,Math.min(cap,expected*attemptWillingness));
+    expected=Math.max(0,Math.min(cap,expected));
+    const accuracy=attemptWeight>0?accuracyWeight/attemptWeight:0;
     const low=Math.max(0,Math.floor(expected*.9));
     const high=Math.min(cap,Math.max(low,Math.ceil(expected*1.1)));
     const attempted=(low+high)/2;
@@ -41,11 +46,13 @@ export function estimateNeetCoverage(chapters:NeetChapter[],progress:ProgressMap
   let low=visible.reduce((n,x)=>n+x.low,0),high=visible.reduce((n,x)=>n+x.high,0);
   const cap=visible.reduce((n,x)=>n+x.available,0);
   if(high-low>Math.round(cap*.08)){const mid=(low+high)/2;const half=Math.round(cap*.04);low=Math.max(0,Math.round(mid-half));high=Math.min(cap,low+half*2);}
-  const expected=(low+high)/2,markPerQuestion=accuracy*4-(1-accuracy);
+  const expected=(low+high)/2;
+  const totalAccuracy=visible.reduce((n,x)=>n+x.attempted*(x.attempted>0?x.correct/x.attempted:0),0)/Math.max(1,visible.reduce((n,x)=>n+x.attempted,0));
+  const markPerQuestion=totalAccuracy*4-(1-totalAccuracy);
   const marksMid=expected*markPerQuestion;
   const marksLow=Math.max(0,Math.round(marksMid-(subject==='All'?10:5)));
   const marksHigh=Math.min(cap*4,Math.max(marksLow,Math.round(marksMid+(subject==='All'?10:5))));
-  return {subjects:bySubject,total:{available:cap,low,high,attempted:expected,correct:expected*accuracy,wrong:expected*(1-accuracy),unattempted:Math.max(0,cap-expected),marksLow,marksHigh,marks:expected*markPerQuestion},method:'Coverage uses chapter-tagged counts from the two 2026 NEET sittings averaged per paper. Easy / Confident chapters use full weight and Need Revision chapters use 75%; Hard / Unmarked chapters are excluded. Counts are planning estimates, not official NTA chapter allocations.'};
+  return {subjects:bySubject,total:{available:cap,low,high,attempted:expected,correct:visible.reduce((n,x)=>n+x.correct,0),wrong:visible.reduce((n,x)=>n+x.wrong,0),unattempted:Math.max(0,cap-expected),marksLow,marksHigh,marks:expected*markPerQuestion},method:'Coverage uses chapter-tagged counts from the two 2026 NEET sittings averaged per paper. each status uses its configurable attempt rate and accuracy. Counts are planning estimates, not official NTA chapter allocations.'};
 }
 
 type NeetRankInput={physics:number;chemistry:number;biology:number;mathematics?:number;manualTotal:string;manualPercentile:string;shift:string};
