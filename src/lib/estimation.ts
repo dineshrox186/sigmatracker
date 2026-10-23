@@ -1,10 +1,10 @@
 import type { Chapter } from '../data/chapters';
-import type { ProgressMap } from './storage';
+import type { ProgressMap, StatusAssumptions } from './storage';
 import {questionDistribution2026,questionDistributionShifts} from '../data/chapterStats';
 export const PATTERN={perSubject:25,total:75,marksPerCorrect:4,marksPerWrong:-1,subjectMarks:100,totalMarks:300};
 // Hard-coded attemptable-question weight for medium-readiness chapters (Need Revision).
 export const MEDIUM_CHAPTER_ATTEMPT_RATE=0.75;
-export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject:'All'|'Physics'|'Chemistry'|'Mathematics',accuracy:number,attemptWillingness:number){
+export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject:'All'|'Physics'|'Chemistry'|'Mathematics',assumptions:StatusAssumptions){
  const selected=subject==='All'?chapters:chapters.filter(c=>c.subject===subject);
  const subjects=['Physics','Chemistry','Mathematics'] as const;
  const aliases:Record<string,string[]> = {
@@ -14,26 +14,31 @@ export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject
  };
  const bySubject=subjects.map(sub=>{
   const cs=selected.filter(c=>c.subject===sub);
-  let low=0,high=0,matched=0;
+  let low=0,high=0,matched=0,accuracyWeight=0,attemptWeight=0;
   const used=new Set<string>();
   for(const c of cs){
    const status=progress[c.id]?.status??'Unmarked';
-   const factor=status==='Easy / Confident'?1:status==='Need Revision'?MEDIUM_CHAPTER_ATTEMPT_RATE:0;
+   const assumption=assumptions[status];
+   const factor=Math.max(0,Math.min(100,assumption.attemptRate))/100;
    if(!factor) continue;
    const topics=aliases[c.id]??[];
    for(const topic of topics){
     const row=questionDistribution2026.find(x=>x.subject===sub&&x.topic===topic);
     if(!row||used.has(row.topic))continue;
     used.add(row.topic); matched++;
+    const topicWeight=row.questions/questionDistributionShifts*factor;
+    accuracyWeight+=topicWeight*Math.max(0,Math.min(100,assumption.accuracy))/100;
+    attemptWeight+=topicWeight;
     low+=Math.floor(row.questions/questionDistributionShifts)*factor;
     high+=Math.ceil(row.questions/questionDistributionShifts)*factor;
    }
   }
-  low=Math.max(0,Math.floor(low*attemptWillingness));
-  high=Math.max(low,Math.ceil(high*attemptWillingness));
+  low=Math.max(0,Math.floor(low));
+  high=Math.max(low,Math.ceil(high));
   // Cap question-range width at 10, centered around the midpoint rather than pinning the lower bound.
   if(high-low>5){const mid=(low+high)/2;low=Math.max(0,Math.round(mid-2.5));high=low+5;}
   const expected=(low+high)/2;
+  const accuracy=attemptWeight>0?accuracyWeight/attemptWeight:0;
   const correct=expected*accuracy,wrong=expected*(1-accuracy);
   const perQuestionMarks=accuracy*4-(1-accuracy);
   const marksMid=((low+high)/2)*perQuestionMarks;
@@ -47,7 +52,7 @@ export function estimateCoverage(chapters:Chapter[],progress:ProgressMap,subject
  const expected=(low+high)/2,markPerQuestion=accuracy*4-(1-accuracy);
  const marksMid=((low+high)/2)*markPerQuestion;
  const marksLow=Math.max(0,Math.round(marksMid-10)),marksHigh=Math.round(marksMid+10);
- return {subjects:bySubject,total:{available:75,low,high,attempted:expected,correct:expected*accuracy,wrong:expected*(1-accuracy),unattempted:Math.max(0,75-expected),marksLow,marksHigh,marks:expected*markPerQuestion},method:'Range based on 2026 question totals divided across 19 shifts; Easy / Confident chapters use full weight, Need Revision (medium-readiness) chapters use a 75% weight, and Hard / Unmarked chapters are excluded. Question range width is capped at 10 questions and centered on its midpoint; marks range is centered on the midpoint of the estimated marks.'};
+ return {subjects:bySubject,total:{available:75,low,high,attempted:expected,correct:visible.reduce((n,x)=>n+x.correct,0),wrong:visible.reduce((n,x)=>n+x.wrong,0),unattempted:Math.max(0,75-expected),marksLow,marksHigh,marks:expected*markPerQuestion},method:'Range based on 2026 question totals divided across 19 shifts; each status uses its configurable attempt rate and accuracy. Question range width is capped at 10 questions and centered on its midpoint; marks range is centered on the midpoint of the estimated marks.'};
 }
 export type RankInput={physics:number;chemistry:number;mathematics:number;manualTotal:string;manualPercentile:string;shift:string};
 // Hard-coded 2026 overall marks-to-percentile reference bands compiled from Careers360's published 2026 marks/percentile analysis.
